@@ -11,6 +11,10 @@ set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -ggdb3 -g3")
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-fsanitize=address")
 
+option(USE_VKFFT "Should VkFFT (GPU Acceleration) be used?" ON)
+
+include(FetchContent)
+
 # Installation directory
 set(EXTCAP_INSTALL_PATH $ENV{EXTCAP_INSTALL_PATH})
 if(EXTCAP_INSTALL_PATH)
@@ -27,6 +31,22 @@ find_package(HackRF REQUIRED)
 find_package(BladeRF REQUIRED)
 find_package(UHD REQUIRED)
 find_package(Liquid REQUIRED)
+
+if(USE_VKFFT)
+  include_directories("vkfft")
+  set(VKFFT_BACKEND 0 CACHE STRING "0 - Vulkan, 5 - Metal")
+  add_definitions(-DVKFFT_BACKEND=${VKFFT_BACKEND})
+
+  if(${VKFFT_BACKEND} EQUAL 0)
+  	find_package(Vulkan REQUIRED)
+  elseif(${VKFFT_BACKEND} EQUAL 5)
+    add_compile_options(-WMTL_IGNORE_WARNINGS)
+    find_library(FOUNDATION_LIB Foundation REQUIRED)
+    find_library(QUARTZ_CORE_LIB QuartzCore REQUIRED)	
+    find_library(METAL_LIB Metal REQUIRED)
+    target_include_directories(${PROJECT_NAME} PUBLIC "metal-cpp/")
+  endif()
+endif(USE_VKFFT)
 
 # Generate header for help
 add_custom_command(
@@ -83,6 +103,23 @@ target_link_libraries(ice9-bluetooth
 )
 
 set_property(TARGET ice9-bluetooth PROPERTY C_STANDARD 99)
+
+if(USE_VKFFT)
+  if(${VKFFT_BACKEND} EQUAL 0)
+    FetchContent_Declare(
+      glslang-main
+      GIT_TAG "origin/main"
+      GIT_REPOSITORY https://github.com/KhronosGroup/glslang
+      SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/glslang-main
+    )
+    FetchContent_GetProperties(glslang-main)
+    if(NOT glslang-main_POPULATED)
+      FetchContent_Populate(glslang-main)
+    endif()
+    target_include_directories(ice9-bluetooth PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/glslang-main/glslang/Include/)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/glslang-main)
+  endif()
+endif(USE_VKFFT)
 
 install(TARGETS ice9-bluetooth DESTINATION ${EXTCAP_INSTALL_PATH})
 

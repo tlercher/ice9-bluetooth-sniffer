@@ -11,6 +11,8 @@
 
 #include "fsk.h"
 
+#include <vkfft/vkFFT.h>
+
 const unsigned median_symbols = 64; // number of symbols to use for CFO correction
 const float max_freq_offset = 0.4f;
 
