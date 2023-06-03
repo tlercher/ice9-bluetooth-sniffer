@@ -1,0 +1,26 @@
+http_archive(
+  name = 'libusb-bin-archive',
+  urls = [
+    'https://github.com/libusb/libusb/releases/download/v1.0.26/libusb-1.0.26-binaries.7z',
+  ],
+  sha256 = '9c242696342dbde9cdc47239391f71833939bf9f7aa2bbb28cdaabe890465ec5',
+  strip_prefix='libusb-1.0.26-binaries',
+  sub_targets = [
+    'libusb.h',
+    'core.c',
+    'sterror.c',
+    'sync.c',
+    'descriptor.c',
+    'io.c',
+    'hotplug.c',
+    'os/linux_usbfs.c',
+    'os/linux_usbfs.h',
+  ],
+  visibility = ['//third_party/libusb:']
+)
+
+prebuilt_cxx_library(
+    name = 'libusb',
+    header_namespace = '',
+    
+)

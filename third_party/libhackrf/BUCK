@@ -1,0 +1,27 @@
+http_archive(
+  name = 'hackrf-archive',
+  urls = [
+    'https://github.com/greatscottgadgets/hackrf/releases/download/v2023.01.1/hackrf-2023.01.1.tar.xz',
+  ],
+  sha256 = '32a03f943a30be4ba478e94bf69f14a5b7d55be6761007f4a4f5453418206a11',
+  strip_prefix='hackrf-2023.01.1',
+  sub_targets = [
+    'host/libhackrf/src/hackrf.c',
+    'host/libhackrf/src/hackrf.h',
+  ],
+  visibility = ['//third_party/libhackrf:']
+)
+
+cxx_library(
+    name = 'libhackrf',
+    srcs = [
+      ':hackrf-archive[host/libhackrf/src/hackrf.c]'
+    ],
+    exported_headers = {
+      'hackrf.h': ':hackrf-archive[host/libhackrf/src/hackrf.h]'
+    },
+    deps = [
+      '//third_party/libusb:libusb'
+    ],
+    visibility = ['PUBLIC'],
+)

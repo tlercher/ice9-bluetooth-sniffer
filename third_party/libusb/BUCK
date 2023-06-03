@@ -1,0 +1,69 @@
+http_archive(
+  name = 'libusb-archive',
+  urls = [
+    'https://github.com/libusb/libusb/releases/download/v1.0.26/libusb-1.0.26.tar.bz2',
+  ],
+  sha256 = '12ce7a61fc9854d1d2a1ffe095f7b5fac19ddba095c259e6067a46500381b5a5',
+  strip_prefix='libusb-1.0.26/libusb',
+  sub_targets = [
+    'libusb.h',
+    'core.c',
+    'sterror.c',
+    'sync.c',
+    'descriptor.c',
+    'io.c',
+    'hotplug.c',
+    'os/linux_usbfs.c',
+    'os/linux_usbfs.h',
+  ],
+  visibility = ['//third_party/libusb:']
+)
+
+cxx_library(
+    name = 'libusb',
+    srcs = [
+        ':libusb-archive[core.c]',
+        ':libusb-archive[sterror.c]',
+        ':libusb-archive[sync.c]',
+        ':libusb-archive[descriptor.c]',
+        ':libusb-archive[io.c]',
+        ':libusb-archive[hotplug.c]',
+    ],
+    header_namespace = '',
+    platform_srcs = [
+        (
+            'linux.*',
+            [
+                ':libusb-archive[os/linux_usbfs.c]',
+            ]
+        ),
+        (
+            'macos.*', 
+            []
+        ),
+        (
+            'windows.*', 
+            []
+        )
+    ],
+    platform_headers = [
+        (
+            'linux.*',
+            [
+                ':libusb-archive[os/linux_usbfs.h]',
+            ]
+        ),
+        (
+            'macos.*', 
+            []
+        ),
+        (
+            'windows.*', 
+            []
+        )
+    ],
+    exported_headers = {
+        'libusb.h':  ':libusb-archive[libusb.h]'
+    },
+    visibility = ['PUBLIC'],
+)
