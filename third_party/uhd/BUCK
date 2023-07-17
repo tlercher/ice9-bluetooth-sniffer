@@ -1,0 +1,29 @@
+http_archive(
+  name = 'uhd-archive',
+  urls = [
+    'https://github.com/EttusResearch/uhd/archive/refs/tags/v4.4.0.0.tar.gz',
+  ],
+  sha256 = 'a994382315b5528e575820c9c3cc9cfcf919cfc3455b1bd7f62004efc52d2327',
+  strip_prefix='uhd-4.4.0.0',
+  sub_targets = [
+    'host/include/uhd/usrp/usrp.h',
+    'host/include/uhd.h',
+    'host/include/uhd/config.h'
+  ],
+  visibility = ['//third_party/uhd:']
+)
+
+cxx_library(
+    name = 'uhd',
+    srcs = [],
+    header_namespace = '',
+    exported_headers = {
+      'usrp.h': ':uhd-archive[host/include/uhd/usrp/usrp.h]',
+      'uhd.h': ':uhd-archive[host/include/uhd.h]',
+      'config.h': ':uhd-archive[host/include/uhd/config.h]',
+    },
+    deps = [
+      '//third_party/uhd:uhd-archive'
+    ],
+    visibility = ['PUBLIC'],
+)

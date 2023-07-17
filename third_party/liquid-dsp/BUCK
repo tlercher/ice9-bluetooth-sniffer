@@ -1,0 +1,25 @@
+http_archive(
+  name = 'liquid-dsp-archive',
+  urls = [
+    'https://github.com/jgaeddert/liquid-dsp/archive/refs/tags/v1.5.0.tar.gz',
+  ],
+  sha256 = '93003edb6e74090b41009b1fae6f273a3e711dc4c8c56a0cca3e89167b765953',
+  strip_prefix='liquid-dsp-1.5.0',
+  sub_targets = [
+    'include/liquid.h',
+  ],
+  visibility = ['//third_party/liquid-dsp:']
+)
+
+cxx_library(
+    name = 'liquid-dsp',
+    srcs = [],
+    header_namespace = 'liquid',
+    exported_headers = {
+      'liquid.h': ':liquid-dsp-archive[include/liquid.h]'
+    },
+    deps = [
+      '//third_party/liquid-dsp:liquid-dsp-archive'
+    ],
+    visibility = ['PUBLIC'],
+)

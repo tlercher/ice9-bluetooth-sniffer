@@ -29,6 +29,9 @@ cxx_library(
         ':libusb-archive[io.c]',
         ':libusb-archive[hotplug.c]',
     ],
+    headers = {
+        'config.h': 'config.h'
+    },
     header_namespace = '',
     platform_srcs = [
         (

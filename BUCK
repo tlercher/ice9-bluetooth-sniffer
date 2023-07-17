@@ -5,14 +5,13 @@
 
 cxx_binary(
     name = "ice9-bluetooth",
-    srcs = ["main.c"],
+    srcs = glob(["*.c"]),
+    headers = glob(["*.h"]),
     link_style = "static",
-    deps = [":btlib"],
-)
-
-cxx_library(
-    name = "btlib",
-    srcs = glob(["*.c"], exclude = ["main.c"]),
-    exported_headers = glob(["*.h"]),
-    visibility = ["PUBLIC"],
+    deps = [
+        '//third_party/libhackrf:libhackrf',
+        '//third_party/liquid-dsp:liquid-dsp',
+        '//third_party/libbladerf:libbladerf',
+        '//third_party/uhd:uhd',
+    ],
 )

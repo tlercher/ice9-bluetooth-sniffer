@@ -1,0 +1,33 @@
+http_archive(
+  name = 'libbladerf-archive',
+  urls = [
+    'https://github.com/Nuand/bladeRF/archive/refs/tags/2023.02.tar.gz',
+  ],
+  sha256 = '3bbac54ad7d6e35be31eb12393be5e7102a070fb1ddc176992d64a6a623670c7',
+  strip_prefix='bladeRF-2023.02',
+  sub_targets = [
+    'host/libraries/libbladeRF/src/bladerf.c',
+    'host/libraries/libbladeRF/include/libbladeRF.h',
+    'host/libraries/libbladeRF/include/bladeRF1.h',
+    'host/libraries/libbladeRF/include/bladeRF2.h',
+    'host/libraries/libbladeRF/include/log.h',
+    'host/libraries/libbladeRF/include/fft.h',
+  ],
+  visibility = ['//third_party/libbladerf:']
+)
+
+cxx_library(
+    name = 'libbladerf',
+    srcs = [
+      ':libbladerf-archive[host/libraries/libbladeRF/src/bladerf.c]'
+    ],
+    header_namespace = '',
+    exported_headers = {
+      'libbladeRF.h': ':libbladerf-archive[host/libraries/libbladeRF/include/libbladeRF.h]',
+      'bladeRF1.h': ':libbladerf-archive[host/libraries/libbladeRF/include/bladeRF1.h]',
+      'bladeRF2.h': ':libbladerf-archive[host/libraries/libbladeRF/include/bladeRF2.h]',
+    },
+    deps = [
+    ],
+    visibility = ['PUBLIC'],
+)
